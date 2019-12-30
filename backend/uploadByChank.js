@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const crypto = require("crypto");
 
 const fileStorage = {};
@@ -106,7 +107,11 @@ function loadingByChunks(request, response) {
         const size = file.getChunkLength(chunkId);
 
         if (file.isCompleted()) {
-            const fstream = fs.createWriteStream(__dirname + '/../files/' + file.name);
+            const distDir = path.resolve(__dirname, '../files');
+            if (!fs.existsSync(distDir)) {
+                fs.mkdirSync(distDir);
+            }
+            const fstream = fs.createWriteStream(path.join(distDir, file.name));
 
             fstream.write(file.getContent());
             fstream.end();
